@@ -22,11 +22,8 @@ export const Env = z.object({
   /** Public base URL for webhook mode. Render sets RENDER_EXTERNAL_URL automatically. */
   PUBLIC_URL: z.url().optional(),
   RENDER_EXTERNAL_URL: z.url().optional(),
-  /** Telegram echoes this in every webhook request so we can reject forged updates. */
-  WEBHOOK_SECRET: z
-    .string()
-    .regex(/^[A-Za-z0-9_-]{16,256}$/)
-    .optional(),
+  /** Any random string (≥16 chars); hashed into the token Telegram echoes on every webhook call. */
+  WEBHOOK_SECRET: z.string().min(16).optional(),
   PORT: z.coerce.number().int().default(10000),
 });
 

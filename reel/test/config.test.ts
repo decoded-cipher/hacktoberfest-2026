@@ -10,6 +10,16 @@ describe("Env", () => {
     expect(config.DATABASE_PATH).toBe("data/pglite");
   });
 
+  it("accepts a base64 webhook secret like Render generates", () => {
+    const secret = "q9Zk+/3vB0xR7mT2Wc8nLp4Yh6Js1dFa5Ge=";
+    const config = Env.parse({
+      TELEGRAM_BOT_TOKEN: "a",
+      TMDB_ACCESS_TOKEN: "b",
+      WEBHOOK_SECRET: secret,
+    });
+    expect(config.WEBHOOK_SECRET).toBe(secret);
+  });
+
   it("requires the tokens", () => {
     expect(Env.safeParse({}).success).toBe(false);
   });
