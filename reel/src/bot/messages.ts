@@ -13,7 +13,7 @@ export const welcome = (name: string | undefined) =>
   ].join("\n");
 
 export const help = [
-  "Just tell me what you watched, in your own words. You can also:",
+  "Just tell me what you watched, in your own words — typing or a voice note. Tell me what you love or can't stand and I'll remember it. You can also:",
   "",
   "/suggest — what to watch next (try “/suggest something light under 2h”)",
   "/next — what to continue watching",
@@ -21,6 +21,7 @@ export const help = [
   "/history — what you watched recently",
   "/undo — remove the last thing you logged",
   "/import — bring in your Letterboxd or IMDb history",
+  "/memory — what I remember about your taste",
   "/help — show this message",
 ].join("\n");
 
@@ -31,7 +32,6 @@ export const pickExpired = "That question expired. Could you send your message a
 export const pickNone = "Okay, nothing logged. Try adding the year, e.g. “Dune 1984”.";
 export const notUnderstood =
   "I'm not sure what to do with that. Tell me what you watched, or send /help.";
-export const comingSoon = "That's coming soon! For now I can track what you watch.";
 
 export const nothingInProgress =
   "You're not in the middle of any shows. Tell me an episode you watched to start tracking one.";
@@ -61,3 +61,14 @@ export const noSuggestions =
   "I couldn't find anything new that fits. Try fewer filters, or rate a few more things first.";
 export const dismissed = "Got it — I won't suggest that again.";
 export const saved = "📌 Saved to your watchlist";
+
+export const remembered = (fact: string, hours: number | null) =>
+  `🧠 Got it, I'll remember: “${fact}”${hours ? ` (for the next ${hours} hours)` : ""}. See /memory.`;
+export const memoryEmpty =
+  "I don't remember any preferences yet. Tell me things like “I can't stand horror” or “I love Florence Pugh”.";
+export const memoryCleared = "Done, I've forgotten all your preferences.";
+export const forgotOne = "Forgotten";
+
+export const voiceUnavailable = "Voice notes aren't set up on this bot yet. Please type instead.";
+export const voiceFailed = "I couldn't download that voice note. Please try again.";
+export const voiceEmpty = "I couldn't hear anything in that voice note. Could you try again?";

@@ -1,10 +1,12 @@
 import { Bot, type BotConfig } from "grammy";
+import { likelyTitles } from "../db/library.ts";
 import { upsertUser } from "../db/users.ts";
 import { RidgeModel } from "../recommend/models.ts";
 import { Recommender } from "../recommend/recommender.ts";
 import { Tracker } from "../services/tracker.ts";
 import type { BotContext, BotDeps, PendingPick, Services } from "./context.ts";
 import { importing } from "./importing.ts";
+import { memory, rememberPreference } from "./memory.ts";
 import * as messages from "./messages.ts";
 import { PendingStore } from "./pending.ts";
 import { filtersFrom, sendSuggestions, suggesting } from "./suggesting.ts";
@@ -19,6 +21,7 @@ export const COMMANDS = [
   { command: "history", description: "What you watched recently" },
   { command: "undo", description: "Remove the last thing you logged" },
   { command: "import", description: "Import from Letterboxd or IMDb" },
+  { command: "memory", description: "What I remember about your taste" },
   { command: "help", description: "What I can do" },
 ];
 
@@ -36,6 +39,7 @@ export function createBot(token: string, deps: BotDeps, config?: BotConfig<BotCo
       tracker,
       model: deps.ratingModel ?? fallback,
       fallback,
+      now,
     }),
     picks: new PendingStore<PendingPick>(),
     download: deps.download ?? ((path) => downloadTelegramFile(token, path)),
@@ -58,12 +62,28 @@ export function createBot(token: string, deps: BotDeps, config?: BotConfig<BotCo
   bot.use(tracking);
   bot.use(importing);
   bot.use(suggesting);
+  bot.use(memory);
 
   bot.on("message:text", async (ctx) => {
     if (ctx.message.text.startsWith("/")) return ctx.reply(messages.help);
+    return handleText(ctx, ctx.message.text);
+  });
 
+  bot.on("message:voice", async (ctx) => {
+    if (!deps.transcribe) return ctx.reply(messages.voiceUnavailable);
     await ctx.replyWithChatAction("typing");
-    const parsed = await deps.parse(ctx.message.text);
+    const file = await ctx.getFile();
+    if (!file.file_path) return ctx.reply(messages.voiceFailed);
+    const hints = await likelyTitles(deps.db, ctx.user.id);
+    const text = await deps.transcribe(await services.download(file.file_path), hints);
+    if (!text) return ctx.reply(messages.voiceEmpty);
+    await ctx.reply(`🎙 “${text}”`);
+    return handleText(ctx, text);
+  });
+
+  async function handleText(ctx: BotContext, text: string) {
+    await ctx.replyWithChatAction("typing");
+    const parsed = await deps.parse(text);
     switch (parsed.intent) {
       case "log_watch":
       case "rate":
@@ -73,11 +93,11 @@ export function createBot(token: string, deps: BotDeps, config?: BotConfig<BotCo
       case "suggest":
         return sendSuggestions(ctx, filtersFrom(parsed));
       case "set_preference":
-        return ctx.reply(messages.comingSoon);
+        return rememberPreference(ctx, parsed, text);
       default:
         return ctx.reply(messages.notUnderstood);
     }
-  });
+  }
 
   bot.catch(async (err) => {
     console.error(`Error while handling update ${err.ctx.update.update_id}:`, err.error);

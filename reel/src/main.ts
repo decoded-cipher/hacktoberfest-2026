@@ -5,6 +5,7 @@ import { LlmClient } from "./llm/client.ts";
 import { createParser } from "./nlu/parser.ts";
 import { TabPfnModel } from "./recommend/tabpfn.ts";
 import { TmdbClient } from "./tmdb/client.ts";
+import { createWhisperTranscriber } from "./voice/whisper.ts";
 
 const config = loadConfig();
 const { db, close } = await openDb(config.DATABASE_PATH);
@@ -19,11 +20,21 @@ const ratingModel = config.PRIORLABS_API_KEY
   : undefined;
 if (!ratingModel) console.log("PRIORLABS_API_KEY not set: suggestions use the local ridge model");
 
+const transcribe = config.WHISPER_MODEL_PATH
+  ? createWhisperTranscriber({
+      model: config.WHISPER_MODEL_PATH,
+      cli: config.WHISPER_CLI,
+      language: config.WHISPER_LANGUAGE,
+    })
+  : undefined;
+if (!transcribe) console.log("WHISPER_MODEL_PATH not set: voice notes are disabled");
+
 const bot = createBot(config.TELEGRAM_BOT_TOKEN, {
   db,
   tmdb,
   parse: createParser(llm),
   ratingModel,
+  transcribe,
 });
 
 await bot.api.setMyCommands(COMMANDS);

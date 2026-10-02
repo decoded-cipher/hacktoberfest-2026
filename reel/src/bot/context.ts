@@ -7,6 +7,7 @@ import type { RatingModel } from "../recommend/models.ts";
 import type { Recommender } from "../recommend/recommender.ts";
 import type { Tracker } from "../services/tracker.ts";
 import type { SearchResult, TmdbApi } from "../tmdb/client.ts";
+import type { Transcribe } from "../voice/whisper.ts";
 import type { PendingStore } from "./pending.ts";
 
 export interface BotDeps {
@@ -15,6 +16,8 @@ export interface BotDeps {
   parse: ParseMessage;
   /** Download a Telegram file by its file_path. Defaults to the Bot API file endpoint. */
   download?: (filePath: string) => Promise<Uint8Array>;
+  /** Speech-to-text for voice notes; voice is disabled when absent. */
+  transcribe?: Transcribe;
   /** Predicts ratings for suggestions. Defaults to a local ridge regression. */
   ratingModel?: RatingModel;
   now?: () => Date;

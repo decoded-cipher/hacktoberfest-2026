@@ -9,6 +9,9 @@ export const Env = z.object({
   DATABASE_PATH: z.string().default("data/pglite"),
   PRIORLABS_API_KEY: z.string().optional(),
   TABPFN_MODEL_PATH: z.string().default("v3.5_default"),
+  WHISPER_MODEL_PATH: z.string().optional(),
+  WHISPER_CLI: z.string().default("whisper-cli"),
+  WHISPER_LANGUAGE: z.string().default("auto"),
 });
 
 export type Config = z.infer<typeof Env>;
