@@ -1,0 +1,30 @@
+name: reel
+
+on:
+  push:
+    branches: [main]
+    paths: ["reel/**", ".github/workflows/reel.yml"]
+  pull_request:
+    paths: ["reel/**", ".github/workflows/reel.yml"]
+
+defaults:
+  run:
+    working-directory: reel
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: reel/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: reel/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
