@@ -55,6 +55,11 @@ export class Tracker {
     return upsertTitle(this.#db, await this.#tmdb.details(kind, tmdbId));
   }
 
+  /** Re-fetch a title from TMDB regardless of cache age (e.g. to pick up new episodes). */
+  async refreshTitle(title: Title): Promise<Title> {
+    return upsertTitle(this.#db, await this.#tmdb.details(title.kind, title.tmdbId));
+  }
+
   async logWatch(
     userId: number,
     title: Title,
