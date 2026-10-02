@@ -18,7 +18,8 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "eval:parser": "node --env-file-if-exists=.env evals/parser-eval.ts",
-    "eval:recommender": "node --env-file-if-exists=.env evals/recommender-eval.ts"
+    "eval:recommender": "node --env-file-if-exists=.env evals/recommender-eval.ts",
+    "train:dataset": "node training/build-dataset.ts"
   },
   "packageManager": "pnpm@10.15.1",
   "pnpm": {
