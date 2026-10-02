@@ -28,6 +28,7 @@ const { values: args } = parseArgs({
       default: process.env.LLM_BASE_URL ?? "http://localhost:11434/v1",
     },
     "api-key": { type: "string", default: process.env.LLM_API_KEY ?? "ollama" },
+    prompt: { type: "string", default: process.env.LLM_PROMPT ?? "full" },
     cases: {
       type: "string",
       default: fileURLToPath(new URL("data/parser-cases.jsonl", import.meta.url)),
@@ -52,6 +53,7 @@ const cases: Case[] = (await readFile(args.cases, "utf8"))
 
 const parse = createParser(
   new LlmClient({ baseURL: args["base-url"], apiKey: args["api-key"], model: args.model }),
+  args.prompt === "compact" ? "compact" : "full",
 );
 
 // Warm up so model loading time doesn't count against the first case.
@@ -93,6 +95,7 @@ latencies.sort((a, b) => a - b);
 const pct = (p: number) => Math.round(latencies[Math.floor((latencies.length - 1) * p)] ?? 0);
 const result = {
   model: args.model,
+  prompt: args.prompt,
   cases: cases.length,
   exactMatch: exact / cases.length,
   fields: Object.fromEntries(
@@ -119,6 +122,7 @@ if (failures.length) {
 
 const outDir = new URL("results/", import.meta.url);
 await mkdir(outDir, { recursive: true });
-const file = new URL(`parser-${args.model.replace(/[^\w.-]+/g, "_")}.json`, outDir);
+const suffix = args.prompt === "compact" ? "-compact" : "";
+const file = new URL(`parser-${args.model.replace(/[^\w.-]+/g, "_")}${suffix}.json`, outDir);
 await writeFile(file, `${JSON.stringify(result, null, 2)}\n`);
 console.log(`\nSaved ${fileURLToPath(file)}`);

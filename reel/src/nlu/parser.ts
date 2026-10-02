@@ -1,15 +1,21 @@
 import type { LlmClient } from "../llm/client.ts";
 import { GENRES } from "../recommend/features.ts";
-import { SYSTEM_PROMPT } from "./prompt.ts";
+import { COMPACT_PROMPT, SYSTEM_PROMPT } from "./prompt.ts";
 import { OTHER, ParsedMessage } from "./schema.ts";
 
 export type ParseMessage = (text: string) => Promise<ParsedMessage>;
 
-/** Build a parser backed by an LLM. Falls back to `other` if the model fails twice. */
-export function createParser(llm: LlmClient): ParseMessage {
+export type PromptStyle = "full" | "compact";
+
+/**
+ * Build a parser backed by an LLM. Falls back to `other` if the model fails twice.
+ * Use the "compact" prompt only with a model fine-tuned on Reel's parsing task.
+ */
+export function createParser(llm: LlmClient, style: PromptStyle = "full"): ParseMessage {
+  const system = style === "compact" ? COMPACT_PROMPT : SYSTEM_PROMPT;
   return async (text) => {
     const messages = [
-      { role: "system" as const, content: SYSTEM_PROMPT },
+      { role: "system" as const, content: system },
       { role: "user" as const, content: text },
     ];
     for (let attempt = 0; attempt < 2; attempt++) {

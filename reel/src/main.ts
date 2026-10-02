@@ -32,7 +32,7 @@ if (!transcribe) console.log("WHISPER_MODEL_PATH not set: voice notes are disabl
 const bot = createBot(config.TELEGRAM_BOT_TOKEN, {
   db,
   tmdb,
-  parse: createParser(llm),
+  parse: createParser(llm, config.LLM_PROMPT),
   ratingModel,
   transcribe,
 });

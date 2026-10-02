@@ -6,6 +6,8 @@ export const Env = z.object({
   LLM_BASE_URL: z.url().default("http://localhost:11434/v1"),
   LLM_MODEL: z.string().default("qwen3:8b"),
   LLM_API_KEY: z.string().default("ollama"),
+  /** "compact" only for a model fine-tuned on Reel's parsing task (see training/). */
+  LLM_PROMPT: z.enum(["full", "compact"]).default("full"),
   DATABASE_PATH: z.string().default("data/pglite"),
   PRIORLABS_API_KEY: z.string().optional(),
   TABPFN_MODEL_PATH: z.string().default("v3.5_default"),

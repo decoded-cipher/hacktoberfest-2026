@@ -46,3 +46,10 @@ Examples:
 "thanks!" → ${ex({})}
 
 Reply with the JSON object only.`;
+
+/**
+ * Short instruction for a model fine-tuned on this task (see training/): no examples needed,
+ * which keeps prompts small and responses fast. Must match the prompt used in training data.
+ */
+export const COMPACT_PROMPT =
+  "Convert the user's message to a movie & TV tracking bot into JSON with keys: intent (log_watch | rate | add_watchlist | progress | suggest | set_preference | other), title, year, kind (movie | tv), season, episode, finished_series, rating (0.5–5 stars), sentiment (loved | liked | mixed | disliked), note, max_runtime (minutes), genres, avoid_genres, temporary. Reply with the JSON object only.";
