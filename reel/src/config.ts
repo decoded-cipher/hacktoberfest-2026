@@ -6,6 +6,8 @@ export const Env = z.object({
   LLM_BASE_URL: z.url().default("http://localhost:11434/v1"),
   LLM_MODEL: z.string().default("qwen3:8b"),
   LLM_API_KEY: z.string().default("ollama"),
+  /** host:port of an Ollama service on a private network (Render); overrides LLM_BASE_URL. */
+  LLM_HOSTPORT: z.string().optional(),
   /** "compact" only for a model fine-tuned on Reel's parsing task (see training/). */
   LLM_PROMPT: z.enum(["full", "compact"]).default("full"),
   /** Local PGlite data directory, used when DATABASE_URL is not set. */
@@ -17,6 +19,15 @@ export const Env = z.object({
   WHISPER_MODEL_PATH: z.string().optional(),
   WHISPER_CLI: z.string().default("whisper-cli"),
   WHISPER_LANGUAGE: z.string().default("auto"),
+  /** Public base URL for webhook mode. Render sets RENDER_EXTERNAL_URL automatically. */
+  PUBLIC_URL: z.url().optional(),
+  RENDER_EXTERNAL_URL: z.url().optional(),
+  /** Telegram echoes this in every webhook request so we can reject forged updates. */
+  WEBHOOK_SECRET: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{16,256}$/)
+    .optional(),
+  PORT: z.coerce.number().int().default(10000),
 });
 
 export type Config = z.infer<typeof Env>;
