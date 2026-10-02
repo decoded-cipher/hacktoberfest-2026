@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { createServer, type Server } from "node:http";
 import { type Bot, type Context, webhookCallback } from "grammy";
 
@@ -24,4 +25,9 @@ export function createWebhookServer<C extends Context>(bot: Bot<C>, secretToken:
     }
     res.writeHead(404).end();
   });
+}
+
+/** Telegram only accepts [A-Za-z0-9_-] secret tokens; derive one from any configured secret. */
+export function webhookToken(secret: string): string {
+  return createHash("sha256").update(secret).digest("hex");
 }

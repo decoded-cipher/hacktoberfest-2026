@@ -1,7 +1,7 @@
 import type { AddressInfo } from "node:net";
 import { Bot } from "grammy";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createWebhookServer, WEBHOOK_PATH } from "../src/server.ts";
+import { createWebhookServer, WEBHOOK_PATH, webhookToken } from "../src/server.ts";
 import { type ApiCall, BOT_INFO, recordApiCalls, textUpdate } from "./helpers/bot.ts";
 
 const SECRET = "test_secret_token_123";
@@ -49,6 +49,11 @@ describe("webhook server", () => {
     expect((await post(textUpdate("hi"))).status).toBe(401);
     expect((await post(textUpdate("hi"), "wrong")).status).toBe(401);
     expect(calls).toHaveLength(0);
+  });
+
+  it("derives a Telegram-safe token from any secret", () => {
+    expect(webhookToken("abc+/=generated==")).toMatch(/^[a-f0-9]{64}$/);
+    expect(webhookToken("same")).toBe(webhookToken("same"));
   });
 
   it("404s anything else", async () => {

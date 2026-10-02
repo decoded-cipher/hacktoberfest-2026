@@ -1,7 +1,7 @@
 import { buildDeps } from "./app.ts";
 import { COMMANDS, createBot } from "./bot/bot.ts";
 import { loadConfig } from "./config.ts";
-import { createWebhookServer, WEBHOOK_PATH } from "./server.ts";
+import { createWebhookServer, WEBHOOK_PATH, webhookToken } from "./server.ts";
 
 const config = loadConfig();
 const { deps, close } = await buildDeps(config);
@@ -15,10 +15,11 @@ const publicUrl = config.PUBLIC_URL ?? config.RENDER_EXTERNAL_URL;
 if (publicUrl) {
   // Webhook mode (e.g. on Render): Telegram pushes updates to our public URL.
   if (!config.WEBHOOK_SECRET) throw new Error("WEBHOOK_SECRET is required in webhook mode");
-  const server = createWebhookServer(bot, config.WEBHOOK_SECRET);
+  const token = webhookToken(config.WEBHOOK_SECRET);
+  const server = createWebhookServer(bot, token);
   server.listen(config.PORT, () => console.log(`Listening on :${config.PORT}`));
   await bot.api.setWebhook(`${publicUrl.replace(/\/$/, "")}${WEBHOOK_PATH}`, {
-    secret_token: config.WEBHOOK_SECRET,
+    secret_token: token,
   });
   console.log(`Reel is running as @${bot.botInfo.username} (webhook)`);
 
