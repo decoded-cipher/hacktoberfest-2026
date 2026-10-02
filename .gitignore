@@ -1,0 +1,38 @@
+# Local-only material (research, reports, third-party brand assets, drafts)
+/assets/
+/reports/
+/research_notes/
+.private/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Personal / generated data
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# Models / training artifacts
+*.gguf
+*.safetensors
+checkpoints/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
