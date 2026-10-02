@@ -1,11 +1,16 @@
-import { Composer, InlineKeyboard } from "grammy";
+import { type Api, Composer, InlineKeyboard } from "grammy";
 import { addToWatchlist, getRating } from "../db/library.ts";
 import type { Title } from "../db/schema.ts";
 import { getSuggestion, setSuggestionOutcome } from "../db/suggestions.ts";
 import { findTitleById } from "../db/titles.ts";
 import type { ParsedMessage } from "../nlu/schema.ts";
 import { canonicalGenres } from "../recommend/features.ts";
-import { MIN_RATINGS, type SuggestFilters, type Suggestion } from "../recommend/recommender.ts";
+import {
+  MIN_RATINGS,
+  type SuggestFilters,
+  type Suggestion,
+  type SuggestResult,
+} from "../recommend/recommender.ts";
 import type { BotContext } from "./context.ts";
 import { escapeHtml, titleHtml } from "./format.ts";
 import { ratingKeyboard } from "./keyboards.ts";
@@ -60,25 +65,36 @@ suggesting.callbackQuery(/^sg:([wsx]):(\d+)$/, async (ctx) => {
 export async function sendSuggestions(ctx: BotContext, filters: SuggestFilters) {
   await ctx.replyWithChatAction("typing");
   const result = await ctx.services.recommender.suggest(ctx.user.id, filters);
-
   if (result.suggestions.length === 0) return ctx.reply(messages.noSuggestions);
+  if (!ctx.chat) return;
+  await deliverSuggestions(ctx.api, ctx.chat.id, result);
+}
 
-  await ctx.reply(
-    result.coldStart
-      ? messages.coldStart(result.ratingsUsed, MIN_RATINGS)
-      : messages.suggestionsIntro(result.ratingsUsed, result.model),
+/** Send an intro line and one card per suggestion (poster when available) to a chat. */
+export async function deliverSuggestions(
+  api: Api,
+  chatId: number,
+  result: SuggestResult,
+  intro?: string,
+) {
+  await api.sendMessage(
+    chatId,
+    intro ??
+      (result.coldStart
+        ? messages.coldStart(result.ratingsUsed, MIN_RATINGS)
+        : messages.suggestionsIntro(result.ratingsUsed, result.model)),
   );
   for (const s of result.suggestions) {
     const caption = suggestionCaption(s, !result.coldStart);
     const reply_markup = suggestionKeyboard(s.id);
     if (s.title.posterPath) {
-      await ctx.replyWithPhoto(`${POSTER_BASE}${s.title.posterPath}`, {
+      await api.sendPhoto(chatId, `${POSTER_BASE}${s.title.posterPath}`, {
         caption,
         parse_mode: "HTML",
         reply_markup,
       });
     } else {
-      await ctx.reply(caption, { parse_mode: "HTML", reply_markup });
+      await api.sendMessage(chatId, caption, { parse_mode: "HTML", reply_markup });
     }
   }
 }
