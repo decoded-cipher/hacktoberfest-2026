@@ -1,0 +1,39 @@
+{
+  "source": "synthetic",
+  "ratings": 300,
+  "folds": 5,
+  "results": [
+    {
+      "model": "user mean",
+      "mae": 0.7618472222222226,
+      "rmse": 0.9477348726774215,
+      "spearman": -0.09848184405304528,
+      "precisionAt10": 0.24000000000000005,
+      "msPerFold": 0.012983199999996486
+    },
+    {
+      "model": "TMDB score",
+      "mae": 0.7579527139162191,
+      "rmse": 0.9311055118321283,
+      "spearman": 0.16349429993617112,
+      "precisionAt10": 0.32,
+      "msPerFold": 0.10732480000001487
+    },
+    {
+      "model": "k-nearest neighbours",
+      "mae": 0.42862226636223105,
+      "rmse": 0.5351215325444096,
+      "spearman": 0.8292301066297721,
+      "precisionAt10": 0.74,
+      "msPerFold": 3.141666599999996
+    },
+    {
+      "model": "ridge regression",
+      "mae": 0.24594896511346942,
+      "rmse": 0.2987431902803023,
+      "spearman": 0.9451903915287061,
+      "precisionAt10": 0.9,
+      "msPerFold": 1.8813581999999998
+    }
+  ]
+}
