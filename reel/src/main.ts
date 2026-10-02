@@ -8,7 +8,7 @@ import { TmdbClient } from "./tmdb/client.ts";
 import { createWhisperTranscriber } from "./voice/whisper.ts";
 
 const config = loadConfig();
-const { db, close } = await openDb(config.DATABASE_PATH);
+const { db, close } = await openDb(config.DATABASE_URL ?? config.DATABASE_PATH);
 const tmdb = new TmdbClient({ accessToken: config.TMDB_ACCESS_TOKEN });
 const llm = new LlmClient({
   baseURL: config.LLM_BASE_URL,

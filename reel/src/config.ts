@@ -8,7 +8,10 @@ export const Env = z.object({
   LLM_API_KEY: z.string().default("ollama"),
   /** "compact" only for a model fine-tuned on Reel's parsing task (see training/). */
   LLM_PROMPT: z.enum(["full", "compact"]).default("full"),
+  /** Local PGlite data directory, used when DATABASE_URL is not set. */
   DATABASE_PATH: z.string().default("data/pglite"),
+  /** Postgres connection string (set automatically on Render). */
+  DATABASE_URL: z.string().optional(),
   PRIORLABS_API_KEY: z.string().optional(),
   TABPFN_MODEL_PATH: z.string().default("v3.5_default"),
   WHISPER_MODEL_PATH: z.string().optional(),

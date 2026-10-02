@@ -41,7 +41,9 @@ async function loadRatings(): Promise<{ source: string; rated: RatedTitle[] }> {
   if (args.synthetic || !args.user) {
     return { source: "synthetic", rated: syntheticRatings(Number(args.size)) };
   }
-  const { db, close } = await openDb(process.env.DATABASE_PATH ?? "data/pglite");
+  const { db, close } = await openDb(
+    process.env.DATABASE_URL ?? process.env.DATABASE_PATH ?? "data/pglite",
+  );
   const [user] = await db
     .select()
     .from(users)
