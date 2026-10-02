@@ -1,5 +1,6 @@
 import type { Db } from "../db/client.ts";
 import { getWatchlist } from "../db/library.ts";
+import { activePreferences } from "../db/preferences.ts";
 import type { Title } from "../db/schema.ts";
 import { excludedTitleIds, ratedTitles, recordSuggestion } from "../db/suggestions.ts";
 import type { Tracker } from "../services/tracker.ts";
@@ -8,6 +9,7 @@ import { libraryKey } from "../tmdb/match.ts";
 import { explain } from "./explain.ts";
 import { canonicalGenres, featureRow, type RatedTitle, TasteProfile } from "./features.ts";
 import type { RatingModel } from "./models.ts";
+import { preferenceAdjustment, withPreferences } from "./preferences.ts";
 
 export const MIN_RATINGS = 5;
 const SEEDS = 3;
@@ -47,6 +49,7 @@ export class Recommender {
   readonly #tracker: Tracker;
   readonly #model: RatingModel;
   readonly #fallback: RatingModel;
+  readonly #now: () => Date;
 
   constructor(deps: {
     db: Db;
@@ -54,7 +57,9 @@ export class Recommender {
     tracker: Tracker;
     model: RatingModel;
     fallback: RatingModel;
+    now?: () => Date;
   }) {
+    this.#now = deps.now ?? (() => new Date());
     this.#db = deps.db;
     this.#tmdb = deps.tmdb;
     this.#tracker = deps.tracker;
@@ -63,9 +68,13 @@ export class Recommender {
   }
 
   async suggest(userId: number, filters: SuggestFilters = {}, limit = 3): Promise<SuggestResult> {
-    const rated = await ratedTitles(this.#db, userId);
+    const [rated, prefs] = await Promise.all([
+      ratedTitles(this.#db, userId),
+      activePreferences(this.#db, userId, this.#now()),
+    ]);
+    const effective = withPreferences(filters, prefs);
     const candidates = (await this.#candidates(userId, rated)).filter((c) =>
-      matchesFilters(c.title, filters),
+      matchesFilters(c.title, effective),
     );
     if (candidates.length === 0) {
       return {
@@ -85,7 +94,13 @@ export class Recommender {
         );
 
     const ranked = candidates
-      .map((c, i) => ({ ...c, predicted: scores[i] ?? 0 }))
+      .map((c, i) => ({
+        ...c,
+        predicted: Math.min(
+          5,
+          Math.max(0.5, (scores[i] ?? 0) + preferenceAdjustment(c.title, prefs)),
+        ),
+      }))
       .sort((a, b) => b.predicted - a.predicted || b.title.popularity - a.title.popularity)
       .slice(0, limit);
 

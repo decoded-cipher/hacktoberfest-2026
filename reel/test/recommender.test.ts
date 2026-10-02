@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { makeTitle } from "../evals/synthetic.ts";
 import { type Db, openDb } from "../src/db/client.ts";
 import { addToWatchlist, logWatch, setRating } from "../src/db/library.ts";
+import { addPreference } from "../src/db/preferences.ts";
 import { setSuggestionOutcome } from "../src/db/suggestions.ts";
 import { upsertTitle } from "../src/db/titles.ts";
 import { upsertUser } from "../src/db/users.ts";
@@ -117,6 +118,20 @@ describe("Recommender", () => {
     const names = short.suggestions.map((s) => s.title.title);
     expect(names).not.toContain("Long Epic");
     expect(names).not.toContain("Romcom New");
+  });
+
+  it("respects stated preferences", async () => {
+    await addPreference(db, {
+      userId,
+      fact: "no thrillers",
+      polarity: "dislike",
+      genres: ["Thriller"],
+    });
+    const avoided = await recommender().suggest(userId, {}, 10);
+    expect(avoided.suggestions.map((s) => s.title.title)).not.toContain("Sicario");
+
+    const asked = await recommender().suggest(userId, { genres: ["Thriller"] }, 10);
+    expect(asked.suggestions.map((s) => s.title.title)).toEqual(["Sicario"]);
   });
 
   it("includes the watchlist", async () => {
