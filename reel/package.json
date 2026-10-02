@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
+    "eval:parser": "node --env-file-if-exists=.env evals/parser-eval.ts"
   },
   "packageManager": "pnpm@10.15.1",
   "pnpm": {
