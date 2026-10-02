@@ -42,3 +42,8 @@ export async function findTitle(db: Db, kind: TitleKind, tmdbId: number): Promis
     .where(and(eq(titles.kind, kind), eq(titles.tmdbId, tmdbId)));
   return row ?? null;
 }
+
+export async function findTitleById(db: Db, id: number): Promise<Title | null> {
+  const [row] = await db.select().from(titles).where(eq(titles.id, id));
+  return row ?? null;
+}

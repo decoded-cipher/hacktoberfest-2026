@@ -122,7 +122,29 @@ export const watchlist = pgTable(
   (t) => [primaryKey({ columns: [t.userId, t.titleId] })],
 );
 
+export type SuggestionOutcome = "watched" | "saved" | "dismissed";
+
+/** Every title the bot suggested, and what the user did with it. */
+export const suggestions = pgTable(
+  "suggestions",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    titleId: integer("title_id")
+      .notNull()
+      .references(() => titles.id),
+    predicted: real().notNull(),
+    model: text().notNull(),
+    outcome: text().$type<SuggestionOutcome>(),
+    shownAt: timestamp("shown_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index().on(t.userId, t.shownAt)],
+);
+
 export type User = typeof users.$inferSelect;
 export type Title = typeof titles.$inferSelect;
 export type WatchEvent = typeof watchEvents.$inferSelect;
 export type ShowProgress = typeof showProgress.$inferSelect;
+export type Suggestion = typeof suggestions.$inferSelect;
