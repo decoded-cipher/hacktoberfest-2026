@@ -3,6 +3,7 @@ import { loadConfig } from "./config.ts";
 import { openDb } from "./db/client.ts";
 import { LlmClient } from "./llm/client.ts";
 import { createParser } from "./nlu/parser.ts";
+import { TabPfnModel } from "./recommend/tabpfn.ts";
 import { TmdbClient } from "./tmdb/client.ts";
 
 const config = loadConfig();
@@ -13,7 +14,17 @@ const llm = new LlmClient({
   apiKey: config.LLM_API_KEY,
   model: config.LLM_MODEL,
 });
-const bot = createBot(config.TELEGRAM_BOT_TOKEN, { db, tmdb, parse: createParser(llm) });
+const ratingModel = config.PRIORLABS_API_KEY
+  ? new TabPfnModel({ apiKey: config.PRIORLABS_API_KEY, modelPath: config.TABPFN_MODEL_PATH })
+  : undefined;
+if (!ratingModel) console.log("PRIORLABS_API_KEY not set: suggestions use the local ridge model");
+
+const bot = createBot(config.TELEGRAM_BOT_TOKEN, {
+  db,
+  tmdb,
+  parse: createParser(llm),
+  ratingModel,
+});
 
 await bot.api.setMyCommands(COMMANDS);
 

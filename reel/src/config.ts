@@ -7,6 +7,8 @@ export const Env = z.object({
   LLM_MODEL: z.string().default("qwen3:8b"),
   LLM_API_KEY: z.string().default("ollama"),
   DATABASE_PATH: z.string().default("data/pglite"),
+  PRIORLABS_API_KEY: z.string().optional(),
+  TABPFN_MODEL_PATH: z.string().default("v3.5_default"),
 });
 
 export type Config = z.infer<typeof Env>;
