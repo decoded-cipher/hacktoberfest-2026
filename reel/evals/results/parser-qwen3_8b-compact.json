@@ -1,0 +1,189 @@
+{
+  "model": "qwen3:8b",
+  "prompt": "compact",
+  "cases": 43,
+  "exactMatch": 0.5581395348837209,
+  "fields": {
+    "intent": 0.627906976744186,
+    "title": 0.90625,
+    "kind": 0.9523809523809523,
+    "season": 0.7,
+    "episode": 0.6,
+    "finished_series": 1,
+    "rating": 0.875
+  },
+  "latencyMs": {
+    "p50": 2136,
+    "p95": 2575
+  },
+  "failures": [
+    {
+      "text": "ep5 sev s2 mid tbh",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "other"
+    },
+    {
+      "text": "ep5 sev s2 mid tbh",
+      "field": "title",
+      "expected": "Severance",
+      "got": "ep5 sev s2 mid tbh"
+    },
+    {
+      "text": "ep5 sev s2 mid tbh",
+      "field": "kind",
+      "expected": "tv",
+      "got": null
+    },
+    {
+      "text": "ep5 sev s2 mid tbh",
+      "field": "season",
+      "expected": 2,
+      "got": null
+    },
+    {
+      "text": "ep5 sev s2 mid tbh",
+      "field": "episode",
+      "expected": 5,
+      "got": null
+    },
+    {
+      "text": "just finished s3e7 of the bear",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "S01E03 andor done",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "watched episodes 4-6 of shogun season 1",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "binged the whole first season of arcane",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "binged the whole first season of arcane",
+      "field": "episode",
+      "expected": null,
+      "got": 1
+    },
+    {
+      "text": "finished game of thrones finally",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "completed all of dark",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "watched sev s2 e10 the finale omg",
+      "field": "title",
+      "expected": "Severance",
+      "got": "Sev"
+    },
+    {
+      "text": "watched sev s2 e10 the finale omg",
+      "field": "episode",
+      "expected": 10,
+      "got": 1
+    },
+    {
+      "text": "just did ep 1 of the last of us",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "just did ep 1 of the last of us",
+      "field": "season",
+      "expected": null,
+      "got": 1
+    },
+    {
+      "text": "finished season 2 of succession",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "progress"
+    },
+    {
+      "text": "watched the new episode of the penguin",
+      "field": "season",
+      "expected": null,
+      "got": 2
+    },
+    {
+      "text": "watched the new episode of the penguin",
+      "field": "episode",
+      "expected": null,
+      "got": 1
+    },
+    {
+      "text": "saw past lives yesterday, 4.5 stars",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "rate"
+    },
+    {
+      "text": "interstellar rewatch, still a 10/10",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "rate"
+    },
+    {
+      "text": "watched dune part two in imax!! 9/10",
+      "field": "title",
+      "expected": "Dune: Part Two",
+      "got": "Dune"
+    },
+    {
+      "text": "watched dune part two in imax!! 9/10",
+      "field": "rating",
+      "expected": 4.5,
+      "got": 4.75
+    },
+    {
+      "text": "saw everything everywhere all at once, ★★★★½",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "rate"
+    },
+    {
+      "text": "kal raat 3 idiots dekhi, mast thi",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "rate"
+    },
+    {
+      "text": "inception again lol",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "other"
+    },
+    {
+      "text": "save poor things for later",
+      "field": "intent",
+      "expected": "add_watchlist",
+      "got": "other"
+    },
+    {
+      "text": "not a fan of musicals",
+      "field": "intent",
+      "expected": "set_preference",
+      "got": "other"
+    }
+  ]
+}

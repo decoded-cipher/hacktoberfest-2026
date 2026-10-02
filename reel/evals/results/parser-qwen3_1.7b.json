@@ -1,0 +1,111 @@
+{
+  "model": "qwen3:1.7b",
+  "prompt": "full",
+  "cases": 43,
+  "exactMatch": 0.7906976744186046,
+  "fields": {
+    "intent": 0.9302325581395349,
+    "title": 0.875,
+    "kind": 0.8095238095238095,
+    "season": 0.8,
+    "episode": 0.9,
+    "finished_series": 1,
+    "rating": 0.875
+  },
+  "latencyMs": {
+    "p50": 890,
+    "p95": 994
+  },
+  "failures": [
+    {
+      "text": "ep5 sev s2 mid tbh",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "suggest"
+    },
+    {
+      "text": "ep5 sev s2 mid tbh",
+      "field": "title",
+      "expected": "Severance",
+      "got": null
+    },
+    {
+      "text": "watched 2x05 of breaking bad",
+      "field": "season",
+      "expected": 2,
+      "got": null
+    },
+    {
+      "text": "watched sev s2 e10 the finale omg",
+      "field": "episode",
+      "expected": 10,
+      "got": 1
+    },
+    {
+      "text": "just did ep 1 of the last of us",
+      "field": "season",
+      "expected": null,
+      "got": 1
+    },
+    {
+      "text": "lotr fellowship extended edition tonight",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "set_preference"
+    },
+    {
+      "text": "lotr fellowship extended edition tonight",
+      "field": "title",
+      "expected": "The Lord of the Rings: The Fellowship of the Ring",
+      "got": "The Lord of the Rings"
+    },
+    {
+      "text": "lotr fellowship extended edition tonight",
+      "field": "kind",
+      "expected": "movie",
+      "got": "tv"
+    },
+    {
+      "text": "saw everything everywhere all at once, ★★★★½",
+      "field": "rating",
+      "expected": 4.5,
+      "got": 3.5
+    },
+    {
+      "text": "kal raat 3 idiots dekhi, mast thi",
+      "field": "title",
+      "expected": "3 Idiots",
+      "got": "Kal Raat 3 Idiots Dekhi"
+    },
+    {
+      "text": "kal raat 3 idiots dekhi, mast thi",
+      "field": "kind",
+      "expected": "movie",
+      "got": "tv"
+    },
+    {
+      "text": "finally saw parasite",
+      "field": "kind",
+      "expected": "movie",
+      "got": "tv"
+    },
+    {
+      "text": "inception again lol",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "suggest"
+    },
+    {
+      "text": "inception again lol",
+      "field": "title",
+      "expected": "Inception",
+      "got": null
+    },
+    {
+      "text": "inception again lol",
+      "field": "kind",
+      "expected": "movie",
+      "got": "tv"
+    }
+  ]
+}
