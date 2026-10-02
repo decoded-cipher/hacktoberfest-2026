@@ -8,7 +8,7 @@ Every project runs on open-weight models, open-source frameworks or local infere
 
 | Project | Built for | What it does | Status |
 |---|---|---|---|
-| [Reel](reel/) | A movie and series fan | Telegram bot that tracks what you watch and suggests what to watch next | Planning |
+| [Reel](reel/) | A movie and series fan | Telegram bot that tracks what you watch and suggests what to watch next | Built |
 
 ## Layout
 
