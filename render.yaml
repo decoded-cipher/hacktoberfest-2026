@@ -1,0 +1,112 @@
+# Render Blueprint for the projects in this repo.
+# Deploy: Render dashboard → New → Blueprint → pick this repository.
+
+envVarGroups:
+  - name: reel-shared
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TMDB_ACCESS_TOKEN
+        sync: false
+      - key: PRIORLABS_API_KEY
+        sync: false
+      # Must match OLLAMA_MODEL on reel-llm. For the Tinker fine-tune, use its
+      # hf.co/<user>/<repo> name in both places and set LLM_PROMPT=compact.
+      - key: LLM_MODEL
+        value: qwen3:1.7b
+      - key: LLM_PROMPT
+        value: full
+
+services:
+  # Telegram bot, in webhook mode (Render sets RENDER_EXTERNAL_URL).
+  - name: reel-bot
+    type: web
+    runtime: node
+    plan: 0.5c-512mb
+    rootDir: reel
+    buildCommand: npx pnpm@10.15.1 install --frozen-lockfile
+    startCommand: node src/main.ts
+    healthCheckPath: /healthz
+    envVars:
+      - fromGroup: reel-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: reel-db
+          property: connectionString
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: LLM_HOSTPORT
+        fromService:
+          type: pserv
+          name: reel-llm
+          property: hostport
+
+  # The open-weight model, served by Ollama on Render's private network.
+  - name: reel-llm
+    type: pserv
+    runtime: docker
+    plan: 2c-4g
+    dockerfilePath: ./reel/deploy/ollama/Dockerfile
+    dockerContext: ./reel/deploy/ollama
+    disk:
+      name: ollama-models
+      mountPath: /root/.ollama
+      sizeGB: 10
+    envVars:
+      - key: OLLAMA_MODEL
+        value: qwen3:1.7b
+
+  # Scheduled messages (times in UTC; 13:00 UTC is 18:30 IST).
+  - name: reel-episode-alerts
+    type: cron
+    runtime: node
+    plan: 0.5c-512mb
+    schedule: "0 13 * * *"
+    rootDir: reel
+    buildCommand: npx pnpm@10.15.1 install --frozen-lockfile
+    startCommand: node src/jobs/run.ts episodes
+    envVars:
+      - fromGroup: reel-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: reel-db
+          property: connectionString
+
+  - name: reel-friday-picks
+    type: cron
+    runtime: node
+    plan: 0.5c-512mb
+    schedule: "30 12 * * 5"
+    rootDir: reel
+    buildCommand: npx pnpm@10.15.1 install --frozen-lockfile
+    startCommand: node src/jobs/run.ts picks
+    envVars:
+      - fromGroup: reel-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: reel-db
+          property: connectionString
+
+  - name: reel-weekly-recap
+    type: cron
+    runtime: node
+    plan: 0.5c-512mb
+    schedule: "0 4 * * 0"
+    rootDir: reel
+    buildCommand: npx pnpm@10.15.1 install --frozen-lockfile
+    startCommand: node src/jobs/run.ts recap
+    envVars:
+      - fromGroup: reel-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: reel-db
+          property: connectionString
+
+databases:
+  - name: reel-db
+    plan: 0.1c-256mb
+    postgresMajorVersion: "17"
+    databaseName: reel
+    user: reel
