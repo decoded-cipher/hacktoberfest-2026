@@ -162,6 +162,19 @@ export const preferences = pgTable(
   (t) => [index().on(t.userId)],
 );
 
+/** Messages the bot sent on its own (alerts, picks, recaps), so a job never repeats one. */
+export const notifications = pgTable(
+  "notifications",
+  {
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    key: text().notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.key] })],
+);
+
 export type User = typeof users.$inferSelect;
 export type Title = typeof titles.$inferSelect;
 export type WatchEvent = typeof watchEvents.$inferSelect;
