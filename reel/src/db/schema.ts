@@ -143,8 +143,28 @@ export const suggestions = pgTable(
   (t) => [index().on(t.userId, t.shownAt)],
 );
 
+export type Polarity = "like" | "dislike";
+
+/** Lasting tastes ("hates jump scares") and short-lived context ("watching with mum tonight"). */
+export const preferences = pgTable(
+  "preferences",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    fact: text().notNull(),
+    polarity: text().$type<Polarity>().notNull(),
+    genres: text().array().notNull().default([]),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index().on(t.userId)],
+);
+
 export type User = typeof users.$inferSelect;
 export type Title = typeof titles.$inferSelect;
 export type WatchEvent = typeof watchEvents.$inferSelect;
 export type ShowProgress = typeof showProgress.$inferSelect;
 export type Suggestion = typeof suggestions.$inferSelect;
+export type Preference = typeof preferences.$inferSelect;
