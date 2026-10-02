@@ -239,3 +239,18 @@ export async function libraryKeys(db: Db, userId: number): Promise<Set<string>> 
 
 const isAfter = (s1: number, e1: number, s2: number, e2: number) =>
   s1 > s2 || (s1 === s2 && e1 > e2);
+
+/** Titles the user is most likely to mention: shows in progress, recent watches, watchlist. */
+export async function likelyTitles(db: Db, userId: number, limit = 40): Promise<string[]> {
+  const [watching, recent, saved] = await Promise.all([
+    continueWatching(db, userId),
+    recentHistory(db, userId, 20),
+    getWatchlist(db, userId),
+  ]);
+  const names = [
+    ...watching.map((r) => r.title.title),
+    ...recent.map((r) => r.title.title),
+    ...saved.map((t) => t.title),
+  ];
+  return [...new Set(names)].slice(0, limit);
+}
