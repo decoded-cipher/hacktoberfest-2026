@@ -28,8 +28,9 @@ export const ParsedMessage = z.object({
   sentiment: z.enum(["loved", "liked", "mixed", "disliked"]).nullable(),
   note: z.string().nullable().describe("Their own short comment, if any"),
   max_runtime: z.number().int().nullable().describe("Suggest only: longest runtime in minutes"),
-  genres: z.array(z.string()).describe("Suggest only: genres they want"),
-  avoid_genres: z.array(z.string()).describe("Suggest only: genres to avoid"),
+  genres: z.array(z.string()).describe("Suggest/preference: genres they want or like"),
+  avoid_genres: z.array(z.string()).describe("Suggest/preference: genres to avoid or disliked"),
+  temporary: z.boolean().describe("Preference only: true if it applies just for now / tonight"),
 });
 
 export type ParsedMessage = z.infer<typeof ParsedMessage>;
@@ -48,4 +49,5 @@ export const OTHER: ParsedMessage = {
   max_runtime: null,
   genres: [],
   avoid_genres: [],
+  temporary: false,
 };

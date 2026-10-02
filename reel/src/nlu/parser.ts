@@ -39,7 +39,7 @@ export function normalizeParsed(p: ParsedMessage): ParsedMessage {
     kind: p.kind ?? (p.season != null || p.episode != null ? "tv" : null),
     rating,
     note: p.note?.trim() || null,
-    max_runtime: positive(p.max_runtime),
+    max_runtime: runtimeMinutes(p.max_runtime),
     genres: knownGenres(p.genres),
     avoid_genres: knownGenres(p.avoid_genres),
   };
@@ -50,4 +50,10 @@ const GENRE_BY_NAME = new Map(GENRES.map((g) => [g.toLowerCase(), g]));
 /** Keep only genres Reel knows, in canonical spelling. */
 function knownGenres(names: string[]): string[] {
   return [...new Set(names.flatMap((n) => GENRE_BY_NAME.get(n.trim().toLowerCase()) ?? []))];
+}
+
+/** Models sometimes answer in hours ("under 2 hours" → 2); anything ≤ 5 is read as hours. */
+function runtimeMinutes(value: number | null): number | null {
+  if (value == null || value <= 0) return null;
+  return value <= 5 ? value * 60 : value;
 }

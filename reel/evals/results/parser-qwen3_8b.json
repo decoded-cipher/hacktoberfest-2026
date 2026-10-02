@@ -1,10 +1,10 @@
 {
   "model": "qwen3:8b",
   "cases": 43,
-  "exactMatch": 0.8604651162790697,
+  "exactMatch": 0.8372093023255814,
   "fields": {
-    "intent": 0.9069767441860465,
-    "title": 0.96875,
+    "intent": 0.8837209302325582,
+    "title": 0.9375,
     "kind": 0.9047619047619048,
     "season": 0.9,
     "episode": 0.9,
@@ -12,8 +12,8 @@
     "rating": 1
   },
   "latencyMs": {
-    "p50": 2201,
-    "p95": 2373
+    "p50": 2359,
+    "p95": 2537
   },
   "failures": [
     {
@@ -45,6 +45,18 @@
       "field": "intent",
       "expected": "log_watch",
       "got": "rate"
+    },
+    {
+      "text": "lotr fellowship extended edition tonight",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "add_watchlist"
+    },
+    {
+      "text": "lotr fellowship extended edition tonight",
+      "field": "title",
+      "expected": "The Lord of the Rings: The Fellowship of the Ring",
+      "got": "lotr fellowship extended edition"
     },
     {
       "text": "saw everything everywhere all at once, ★★★★½",

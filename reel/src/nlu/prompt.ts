@@ -25,6 +25,7 @@ Rules:
 - rating: only if they give one explicitly. Convert to 0.5–5 stars: "8/10" → 4, "4/5" → 4, "★★★½" → 3.5.
 - sentiment: loved / liked / mixed / disliked if they express an opinion, else null. "mid", "meh", "ok" → mixed.
 - note: their own comment in a few words, else null.
+- For set_preference: note is the preference in their words; genres they like go in genres, genres they dislike in avoid_genres (same genre names as below); temporary is true only if it is just for now ("tonight", "today", "this weekend").
 - For suggest only: max_runtime in minutes ("under 2 hours" → 120, "something short" → 100); genres they want and avoid_genres, using only these names: ${GENRE_LIST}. Map moods to genres: light / feel-good → Comedy, Romance, Family; scary → Horror; mind-bending → Science Fiction, Mystery.
 - Unknown fields are null. Never invent titles, years or numbers.
 
@@ -39,7 +40,9 @@ Examples:
 "what should i watch tonight" → ${ex({ intent: "suggest" })}
 "something light under 2 hours, no romance" → ${ex({ intent: "suggest", max_runtime: 120, genres: ["Comedy", "Family"], avoid_genres: ["Romance"] })}
 "a series to binge" → ${ex({ intent: "suggest", kind: "tv" })}
-"i can't stand horror" → ${ex({ intent: "set_preference", sentiment: "disliked", note: "can't stand horror" })}
+"i can't stand horror" → ${ex({ intent: "set_preference", sentiment: "disliked", note: "can't stand horror", avoid_genres: ["Horror"] })}
+"big fan of anything with florence pugh" → ${ex({ intent: "set_preference", sentiment: "loved", note: "big fan of Florence Pugh" })}
+"watching with my mum tonight so keep it family friendly" → ${ex({ intent: "set_preference", note: "watching with mum, family friendly", genres: ["Family", "Comedy"], avoid_genres: ["Horror"], temporary: true })}
 "thanks!" → ${ex({})}
 
 Reply with the JSON object only.`;

@@ -10,6 +10,17 @@ describe("normalizeParsed", () => {
     expect(normalizeParsed({ ...OTHER, rating: 42 }).rating).toBeNull();
   });
 
+  it("reads small runtimes as hours", () => {
+    expect(normalizeParsed({ ...OTHER, max_runtime: 2 }).max_runtime).toBe(120);
+    expect(normalizeParsed({ ...OTHER, max_runtime: 90 }).max_runtime).toBe(90);
+  });
+
+  it("keeps only known genres, in canonical spelling", () => {
+    expect(normalizeParsed({ ...OTHER, genres: ["comedy", "Comedy", "Vibes"] }).genres).toEqual([
+      "Comedy",
+    ]);
+  });
+
   it("infers tv when an episode is given", () => {
     expect(normalizeParsed({ ...OTHER, season: 1, episode: 2 }).kind).toBe("tv");
   });
