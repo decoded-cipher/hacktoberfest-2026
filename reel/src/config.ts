@@ -1,0 +1,24 @@
+import { z } from "zod";
+
+export const Env = z.object({
+  TELEGRAM_BOT_TOKEN: z.string().min(1),
+  TMDB_ACCESS_TOKEN: z.string().min(1),
+  LLM_BASE_URL: z.url().default("http://localhost:11434/v1"),
+  LLM_MODEL: z.string().default("qwen3:8b"),
+  LLM_API_KEY: z.string().default("ollama"),
+  DATABASE_PATH: z.string().default("data/pglite"),
+});
+
+export type Config = z.infer<typeof Env>;
+
+/** Parse environment variables with the given schema, exiting with a readable error on failure. */
+export function loadConfig(): Config;
+export function loadConfig<S extends z.ZodType>(schema: S, env?: NodeJS.ProcessEnv): z.infer<S>;
+export function loadConfig(schema: z.ZodType = Env, env: NodeJS.ProcessEnv = process.env) {
+  const result = schema.safeParse(env);
+  if (!result.success) {
+    console.error(`Invalid configuration:\n${z.prettifyError(result.error)}`);
+    process.exit(1);
+  }
+  return result.data;
+}
