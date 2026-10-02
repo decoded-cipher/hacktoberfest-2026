@@ -3,7 +3,7 @@
   "cases": 43,
   "exactMatch": 0.8604651162790697,
   "fields": {
-    "intent": 0.9302325581395349,
+    "intent": 0.9069767441860465,
     "title": 0.96875,
     "kind": 0.9047619047619048,
     "season": 0.9,
@@ -12,8 +12,8 @@
     "rating": 1
   },
   "latencyMs": {
-    "p50": 1645,
-    "p95": 1805
+    "p50": 2201,
+    "p95": 2373
   },
   "failures": [
     {
@@ -27,6 +27,12 @@
       "field": "season",
       "expected": null,
       "got": 1
+    },
+    {
+      "text": "saw past lives yesterday, 4.5 stars",
+      "field": "intent",
+      "expected": "log_watch",
+      "got": "rate"
     },
     {
       "text": "saw past lives yesterday, 4.5 stars",

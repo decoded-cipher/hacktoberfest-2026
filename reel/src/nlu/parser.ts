@@ -1,4 +1,5 @@
 import type { LlmClient } from "../llm/client.ts";
+import { GENRES } from "../recommend/features.ts";
 import { SYSTEM_PROMPT } from "./prompt.ts";
 import { OTHER, ParsedMessage } from "./schema.ts";
 
@@ -38,5 +39,15 @@ export function normalizeParsed(p: ParsedMessage): ParsedMessage {
     kind: p.kind ?? (p.season != null || p.episode != null ? "tv" : null),
     rating,
     note: p.note?.trim() || null,
+    max_runtime: positive(p.max_runtime),
+    genres: knownGenres(p.genres),
+    avoid_genres: knownGenres(p.avoid_genres),
   };
+}
+
+const GENRE_BY_NAME = new Map(GENRES.map((g) => [g.toLowerCase(), g]));
+
+/** Keep only genres Reel knows, in canonical spelling. */
+function knownGenres(names: string[]): string[] {
+  return [...new Set(names.flatMap((n) => GENRE_BY_NAME.get(n.trim().toLowerCase()) ?? []))];
 }

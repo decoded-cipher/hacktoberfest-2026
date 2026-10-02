@@ -1,5 +1,8 @@
+import { GENRES } from "../recommend/features.ts";
 import type { ParsedMessage } from "./schema.ts";
 import { OTHER } from "./schema.ts";
+
+const GENRE_LIST = GENRES.join(", ");
 
 const ex = (over: Partial<ParsedMessage>): string => JSON.stringify({ ...OTHER, ...over });
 
@@ -22,6 +25,7 @@ Rules:
 - rating: only if they give one explicitly. Convert to 0.5–5 stars: "8/10" → 4, "4/5" → 4, "★★★½" → 3.5.
 - sentiment: loved / liked / mixed / disliked if they express an opinion, else null. "mid", "meh", "ok" → mixed.
 - note: their own comment in a few words, else null.
+- For suggest only: max_runtime in minutes ("under 2 hours" → 120, "something short" → 100); genres they want and avoid_genres, using only these names: ${GENRE_LIST}. Map moods to genres: light / feel-good → Comedy, Romance, Family; scary → Horror; mind-bending → Science Fiction, Mystery.
 - Unknown fields are null. Never invent titles, years or numbers.
 
 Examples:
@@ -33,6 +37,8 @@ Examples:
 "add past lives to my list" → ${ex({ intent: "add_watchlist", title: "Past Lives" })}
 "where am i in shogun?" → ${ex({ intent: "progress", title: "Shōgun", kind: "tv" })}
 "what should i watch tonight" → ${ex({ intent: "suggest" })}
+"something light under 2 hours, no romance" → ${ex({ intent: "suggest", max_runtime: 120, genres: ["Comedy", "Family"], avoid_genres: ["Romance"] })}
+"a series to binge" → ${ex({ intent: "suggest", kind: "tv" })}
 "i can't stand horror" → ${ex({ intent: "set_preference", sentiment: "disliked", note: "can't stand horror" })}
 "thanks!" → ${ex({})}
 

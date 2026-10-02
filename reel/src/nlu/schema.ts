@@ -27,6 +27,9 @@ export const ParsedMessage = z.object({
   rating: z.number().nullable().describe("Explicit rating converted to a 0.5–5 star scale"),
   sentiment: z.enum(["loved", "liked", "mixed", "disliked"]).nullable(),
   note: z.string().nullable().describe("Their own short comment, if any"),
+  max_runtime: z.number().int().nullable().describe("Suggest only: longest runtime in minutes"),
+  genres: z.array(z.string()).describe("Suggest only: genres they want"),
+  avoid_genres: z.array(z.string()).describe("Suggest only: genres to avoid"),
 });
 
 export type ParsedMessage = z.infer<typeof ParsedMessage>;
@@ -42,4 +45,7 @@ export const OTHER: ParsedMessage = {
   rating: null,
   sentiment: null,
   note: null,
+  max_runtime: null,
+  genres: [],
+  avoid_genres: [],
 };
