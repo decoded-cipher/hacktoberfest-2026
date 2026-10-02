@@ -1,0 +1,5 @@
+# Ollama model for the fine-tuned Reel parser. Run `ollama create reel-parser -f Modelfile`
+# from the folder containing reel-parser.gguf (see training/README.md).
+FROM ./reel-parser.gguf
+PARAMETER temperature 0
+PARAMETER num_ctx 2048
