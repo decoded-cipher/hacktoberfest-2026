@@ -16,7 +16,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
   },
   "packageManager": "pnpm@10.15.1",
   "pnpm": {
@@ -26,7 +26,9 @@
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "csv-parse": "^7.0.3",
     "drizzle-orm": "^0.45.3",
+    "fflate": "^0.8.3",
     "grammy": "^1.46.0",
     "openai": "^7.27.0",
     "zod": "^4.6.5"
