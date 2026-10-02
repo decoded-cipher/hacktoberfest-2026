@@ -1,15 +1,19 @@
 import { Bot, type BotConfig } from "grammy";
 import { upsertUser } from "../db/users.ts";
+import { RidgeModel } from "../recommend/models.ts";
+import { Recommender } from "../recommend/recommender.ts";
 import { Tracker } from "../services/tracker.ts";
 import type { BotContext, BotDeps, PendingPick, Services } from "./context.ts";
 import { importing } from "./importing.ts";
 import * as messages from "./messages.ts";
 import { PendingStore } from "./pending.ts";
+import { filtersFrom, sendSuggestions, suggesting } from "./suggesting.ts";
 import { handleTitleIntent, tracking } from "./tracking.ts";
 
 export type { BotDeps } from "./context.ts";
 
 export const COMMANDS = [
+  { command: "suggest", description: "What to watch next" },
   { command: "next", description: "What to continue watching" },
   { command: "watchlist", description: "Things you saved for later" },
   { command: "history", description: "What you watched recently" },
@@ -21,9 +25,18 @@ export const COMMANDS = [
 export function createBot(token: string, deps: BotDeps, config?: BotConfig<BotContext>) {
   const bot = new Bot<BotContext>(token, config);
   const now = deps.now ?? (() => new Date());
+  const tracker = new Tracker({ db: deps.db, tmdb: deps.tmdb, now });
+  const fallback = new RidgeModel();
   const services: Services = {
     ...deps,
-    tracker: new Tracker({ db: deps.db, tmdb: deps.tmdb, now }),
+    tracker,
+    recommender: new Recommender({
+      db: deps.db,
+      tmdb: deps.tmdb,
+      tracker,
+      model: deps.ratingModel ?? fallback,
+      fallback,
+    }),
     picks: new PendingStore<PendingPick>(),
     download: deps.download ?? ((path) => downloadTelegramFile(token, path)),
     now,
@@ -44,6 +57,7 @@ export function createBot(token: string, deps: BotDeps, config?: BotConfig<BotCo
 
   bot.use(tracking);
   bot.use(importing);
+  bot.use(suggesting);
 
   bot.on("message:text", async (ctx) => {
     if (ctx.message.text.startsWith("/")) return ctx.reply(messages.help);
@@ -57,6 +71,7 @@ export function createBot(token: string, deps: BotDeps, config?: BotConfig<BotCo
       case "progress":
         return handleTitleIntent(ctx, parsed);
       case "suggest":
+        return sendSuggestions(ctx, filtersFrom(parsed));
       case "set_preference":
         return ctx.reply(messages.comingSoon);
       default:

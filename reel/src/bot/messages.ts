@@ -15,6 +15,7 @@ export const welcome = (name: string | undefined) =>
 export const help = [
   "Just tell me what you watched, in your own words. You can also:",
   "",
+  "/suggest — what to watch next (try “/suggest something light under 2h”)",
   "/next — what to continue watching",
   "/watchlist — things you saved for later",
   "/history — what you watched recently",
@@ -51,3 +52,12 @@ export const importWrongType =
 export const importTooBig = "That file is over 20 MB, which is too big for me to download.";
 export const importDownloadFailed = "I couldn't download that file. Please try again.";
 export const importEmpty = "I didn't find any movies or shows in that file.";
+
+export const suggestionsIntro = (ratings: number, model: string) =>
+  `🍿 Picked for you — ranked by ${model} from your ${ratings} ratings:`;
+export const coldStart = (ratings: number, needed: number) =>
+  `🍿 Here are some well-loved picks. You've rated ${ratings} title${ratings === 1 ? "" : "s"} so far — rate at least ${needed} (or /import your history) and I'll start learning your taste.`;
+export const noSuggestions =
+  "I couldn't find anything new that fits. Try fewer filters, or rate a few more things first.";
+export const dismissed = "Got it — I won't suggest that again.";
+export const saved = "📌 Saved to your watchlist";
